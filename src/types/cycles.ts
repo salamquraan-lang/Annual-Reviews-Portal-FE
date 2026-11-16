@@ -60,3 +60,18 @@ export const CYCLE_TYPE_LABELS: Record<CycleType, string> = {
 	annual: 'Annual',
 	midyear: 'Midyear',
 };
+
+export const CYCLE_STATUSES: CycleStatus[] = ['draft', 'open', 'closed', 'finalized'];
+
+export const CYCLE_TYPES: CycleType[] = ['annual', 'midyear'];
+
+export type CycleAction =
+	| 'edit'
+	| 'delete'
+	| 'readiness'
+	| 'open'
+	| 'changeEndDate'
+	| 'close'
+	| 'reopen'
+	| 'finalize'
+	| 'copy';
