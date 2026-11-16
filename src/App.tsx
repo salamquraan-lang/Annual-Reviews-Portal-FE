@@ -5,31 +5,46 @@ import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
 import { VerifyEmailPage } from './pages/VerifyEmailPage';
+import { RequireRole } from './auth/RequireRole';
+import { AppLayout } from './components/AppLayout';
+import { CyclesPage } from './pages/CyclesPage';
+import { DepartmentsPage } from './pages/DepartmentsPage';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './api/queryClient';
 
 function NotFound() {
-  return (
-    <main className="full-page-center">
-      <div className="card center">
-        <h1>Page not found</h1>
-        <Link to="/">Go to the home page</Link>
-      </div>
-    </main>
-  );
+	return (
+		<main className="full-page-center">
+			<div className="card center">
+				<h1>Page not found</h1>
+				<Link to="/">Go to the home page</Link>
+			</div>
+		</main>
+	);
 }
 
 export function App() {
-  return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
-          <Route path="/signup" element={<GuestOnly><SignupPage /></GuestOnly>} />
-          <Route path="/verify-email" element={<VerifyEmailPage />} />
-          <Route path="/" element={<RequireAuth><HomePage /></RequireAuth>} />
-          <Route path="/home" element={<Navigate to="/" replace />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
-  );
+	return (
+		<QueryClientProvider client={queryClient}>
+			<BrowserRouter>
+				<AuthProvider>
+					<Routes>
+						<Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
+						<Route path="/signup" element={<GuestOnly><SignupPage /></GuestOnly>} />
+						<Route path="/verify-email" element={<VerifyEmailPage />} />
+						<Route element={<RequireAuth><AppLayout /></RequireAuth>}>
+							<Route path="/" element={<HomePage />} />
+							<Route
+								path="/departments"
+								element={<RequireRole roles={['admin', 'super_admin']}><DepartmentsPage /></RequireRole>}
+							/>
+							<Route path="/cycles" element={<RequireRole roles={['admin']}><CyclesPage /></RequireRole>} />
+						</Route>
+						<Route path="/home" element={<Navigate to="/" replace />} />
+						<Route path="*" element={<NotFound />} />
+					</Routes>
+				</AuthProvider>
+			</BrowserRouter>
+		</QueryClientProvider>
+	);
 }
