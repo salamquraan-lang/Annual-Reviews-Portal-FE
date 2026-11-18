@@ -13,6 +13,7 @@ const NAV_ITEMS: NavItem[] = [
 	{ label: 'Home', to: '/' },
 	{ label: 'Departments', to: '/departments', roles: ['admin', 'super_admin'] },
 	{ label: 'Cycles', to: '/cycles', roles: ['admin'] },
+	{ label: 'Question bank', to: '/question-bank', roles: ['admin'] },
 ];
 
 export function AppLayout() {
