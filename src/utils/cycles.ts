@@ -1,5 +1,13 @@
-import { CYCLE_TYPE_LABELS } from '../types/cycles';
-import type { Cycle, CycleAction, CycleInput, CycleStatus, CycleType, CycleUpdate } from '../types/cycles';
+import { CYCLE_STATUSES, CYCLE_TYPES, CYCLE_TYPE_LABELS } from '../types/cycles';
+import type {
+	Cycle,
+	CycleAction,
+	CycleInput,
+	CycleListParams,
+	CycleStatus,
+	CycleType,
+	CycleUpdate,
+} from '../types/cycles';
 
 export const NAME_MAX_LENGTH = 120;
 export const YEAR_MIN = 2000;
@@ -135,4 +143,37 @@ export function changedFields(cycle: Cycle, input: CycleInput): CycleUpdate {
 	if (input.startDate !== cycle.startDate) update.startDate = input.startDate;
 	if (input.endDate !== cycle.endDate) update.endDate = input.endDate;
 	return update;
+}
+
+export function parseYear(value: string | null): number | undefined {
+	if (value === null || !/^\d+$/.test(value)) return undefined;
+	const year = Number(value);
+	return year >= YEAR_MIN && year <= YEAR_MAX ? year : undefined;
+}
+
+export function parseCycleFilters(search: URLSearchParams): CycleListParams {
+	const status = search.get('status');
+	const type = search.get('type');
+	const pageText = search.get('page');
+	const page = pageText !== null && /^\d+$/.test(pageText) ? Number(pageText) : 0;
+
+	return {
+		status: CYCLE_STATUSES.find((s) => s === status),
+		type: CYCLE_TYPES.find((t) => t === type),
+		year: parseYear(search.get('year')),
+		page: page >= 1 ? page : undefined,
+	};
+}
+
+export function cycleYearWarning(values: CycleFormValues): string | null {
+	const year = parseYear(values.year.trim());
+	if (year === undefined) return null;
+	if (!isValidDateText(values.startDate) || !isValidDateText(values.endDate)) return null;
+
+	const startYear = Number(values.startDate.slice(0, 4));
+	const endYear = Number(values.endDate.slice(0, 4));
+	if (year >= startYear - 1 && year <= endYear) return null;
+
+	const span = startYear === endYear ? String(startYear) : `${startYear}–${endYear}`;
+	return `The dates are in ${span} but the year is ${year}. Check that this is what you want.`;
 }
