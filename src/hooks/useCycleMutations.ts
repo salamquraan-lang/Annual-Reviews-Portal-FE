@@ -45,6 +45,7 @@ export function useDeleteCycle() {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: (id: number) => cyclesApi.remove(id),
+		onError: () => queryClient.invalidateQueries({ queryKey: cycleKeys.all }),
 		onSuccess: (_data, id) => {
 			queryClient.invalidateQueries({ queryKey: cycleKeys.detail(id), refetchType: 'none' });
 			queryClient.invalidateQueries({ queryKey: cycleKeys.readiness(id), refetchType: 'none' });

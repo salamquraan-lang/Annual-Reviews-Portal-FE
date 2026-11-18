@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ApiError } from '../api/client';
+import { ChangeEndDateModal } from '../components/ChangeEndDateModal';
+import { CycleDangerZone } from '../components/CycleDangerZone';
 import { CycleFormModal } from '../components/CycleFormModal';
 import { CycleLifecycle } from '../components/CycleLifecycle';
 import { CycleStatusBadge } from '../components/CycleStatusBadge';
@@ -8,6 +10,8 @@ import { ReadinessPanel } from '../components/ReadinessPanel';
 import { useCycle } from '../hooks/useCycles';
 import { CYCLE_TYPE_LABELS } from '../types/cycles';
 import { allowedActions, formatDate } from '../utils/cycles';
+
+type DetailDialog = 'edit' | 'endDate' | 'copy' | null;
 
 function CycleNotFound() {
 	return (
@@ -20,11 +24,12 @@ function CycleNotFound() {
 }
 
 export function CycleDetailPage() {
+	const navigate = useNavigate();
 	const { id: idParam } = useParams();
 	const parsed = Number(idParam);
 	const id = /^\d+$/.test(idParam ?? '') && Number.isSafeInteger(parsed) ? parsed : NaN;
 	const { data: cycle, isPending, isError, error } = useCycle(id);
-	const [editing, setEditing] = useState(false);
+	const [dialog, setDialog] = useState<DetailDialog>(null);
 
 	if (!Number.isInteger(id)) return <CycleNotFound />;
 	if (isPending) return <p className="state-message">Loading cycle…</p>;
@@ -50,8 +55,18 @@ export function CycleDetailPage() {
 				<div className="page-header__actions">
 					<CycleStatusBadge status={cycle.status} />
 					{actions.includes('edit') && (
-						<button type="button" className="button" onClick={() => setEditing(true)}>
+						<button type="button" className="button" onClick={() => setDialog('edit')}>
 							Edit
+						</button>
+					)}
+					{actions.includes('changeEndDate') && (
+						<button type="button" className="button" onClick={() => setDialog('endDate')}>
+							Change end date
+						</button>
+					)}
+					{actions.includes('copy') && (
+						<button type="button" className="button" onClick={() => setDialog('copy')}>
+							Copy this cycle
 						</button>
 					)}
 				</div>
@@ -77,8 +92,20 @@ export function CycleDetailPage() {
 				</dl>
 			</section>
 
-			{editing && (
-				<CycleFormModal mode={{ kind: 'edit', cycle }} onClose={() => setEditing(false)} />
+			{actions.includes('delete') && <CycleDangerZone cycle={cycle} />}
+
+			{dialog === 'edit' && (
+				<CycleFormModal mode={{ kind: 'edit', cycle }} onClose={() => setDialog(null)} />
+			)}
+			{dialog === 'copy' && (
+				<CycleFormModal
+					mode={{ kind: 'copy', source: cycle }}
+					onClose={() => setDialog(null)}
+					onSaved={(copy) => navigate(`/cycles/${copy.id}`)}
+				/>
+			)}
+			{dialog === 'endDate' && (
+				<ChangeEndDateModal cycle={cycle} onClose={() => setDialog(null)} />
 			)}
 		</>
 	);
