@@ -152,7 +152,8 @@ a:hover {
 	font-size: 0.9rem;
 }
 
-.field input {
+.field input,
+.field>select {
 	width: 100%;
 	font: inherit;
 	color: var(--text);
@@ -163,17 +164,20 @@ a:hover {
 	transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-.field input:focus {
+.field input:focus,
+.field>select:focus {
 	outline: none;
 	border-color: var(--primary);
 	box-shadow: 0 0 0 3px var(--focus);
 }
 
-.field--error input {
+.field--error input,
+.field--error>select {
 	border-color: var(--error);
 }
 
-.field--error input:focus {
+.field--error input:focus,
+.field--error>select:focus {
 	box-shadow: 0 0 0 3px color-mix(in srgb, var(--error) 30%, transparent);
 }
 
@@ -884,4 +888,66 @@ a.btn--primary:hover {
 .picker__list option {
 	padding: 4px 8px;
 	font-weight: 400;
+}
+
+.button--danger {
+	border-color: var(--error);
+	color: var(--error);
+}
+
+.button--danger:hover:not(:disabled) {
+	background: var(--error-bg);
+}
+
+.lifecycle {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 0 0 16px;
+	padding: 0;
+	list-style: none;
+}
+
+.lifecycle__step {
+	padding: 4px 12px;
+	border: 1px solid var(--border);
+	border-radius: 999px;
+	color: var(--muted);
+	font-size: 0.85rem;
+}
+
+.lifecycle__step--done {
+	color: var(--text);
+}
+
+.lifecycle__step--current {
+	border-color: var(--primary);
+	background: var(--primary);
+	color: var(--primary-text);
+	font-weight: 600;
+}
+
+.lifecycle__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.lifecycle-card,
+.readiness-card {
+	margin-bottom: 16px;
+}
+
+.readiness-card .alert {
+	margin-bottom: 1rem;
+}
+
+.readiness-card ul {
+	margin: 8px 0 0;
+	padding-left: 20px;
+}
+
+.danger-card {
+	margin-top: 16px;
+	border-color: var(--error);
 }
