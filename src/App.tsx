@@ -8,7 +8,10 @@ import { VerifyEmailPage } from './pages/VerifyEmailPage';
 import { RequireRole } from './auth/RequireRole';
 import { AppLayout } from './components/AppLayout';
 import { CyclesPage } from './pages/CyclesPage';
+import { CycleDetailPage } from './pages/CycleDetailPage';
 import { DepartmentsPage } from './pages/DepartmentsPage';
+import { QuestionBankPage } from './pages/QuestionBankPage';
+import { TemplatesPage } from './pages/TemplatesPage';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './api/queryClient';
 
@@ -39,6 +42,15 @@ export function App() {
 								element={<RequireRole roles={['admin', 'super_admin']}><DepartmentsPage /></RequireRole>}
 							/>
 							<Route path="/cycles" element={<RequireRole roles={['admin']}><CyclesPage /></RequireRole>} />
+							<Route path="/cycles/:id" element={<RequireRole roles={['admin']}><CycleDetailPage /></RequireRole>} />
+							<Route
+								path="/cycles/:id/templates"
+								element={<RequireRole roles={['admin']}><TemplatesPage /></RequireRole>}
+							/>
+							<Route
+								path="/question-bank"
+								element={<RequireRole roles={['admin']}><QuestionBankPage /></RequireRole>}
+							/>
 						</Route>
 						<Route path="/home" element={<Navigate to="/" replace />} />
 						<Route path="*" element={<NotFound />} />
